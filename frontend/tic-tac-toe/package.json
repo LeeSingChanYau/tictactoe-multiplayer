@@ -1,0 +1,29 @@
+{
+  "name": "tic-tac-toe",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@stomp/stompjs": "^7.1.0",
+    "next": "15.2.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "stompjs": "^2.3.3",
+    "ws": "^8.18.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/stompjs": "^2.3.9",
+    "@types/ws": "^8.18.0",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
