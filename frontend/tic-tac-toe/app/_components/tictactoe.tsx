@@ -12,7 +12,7 @@ export default function TicTacToe() {
       const [messages, setMessages] = useState([]);
       const [greeting, setGreeting] = useState<any>("");
 
-      useSubscription('/topic/greetings', (newGreeting) => {setGreeting(JSON.parse(newGreeting.body).content)});
+      useSubscription('/topic/greetings', (newGreeting) => {setGreeting(JSON.parse(newGreeting .body).content)});
             
       const stompClient = useStompClient();
 
