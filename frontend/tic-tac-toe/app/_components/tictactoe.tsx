@@ -1,62 +1,94 @@
-import { useState, useEffect, use } from "react";
-import { useStompClient, useSubscription } from "react-stomp-hooks";
+import { useState, useEffect, use } from 'react';
+import { useStompClient, useSubscription } from 'react-stomp-hooks';
 
 export default function TicTacToe() {
-      const [grid, setGrid] = useState([
-        ["", "", ""],
-        ["", "", ""],
-        ["", "", ""],
-      ]);
+  const [board, setBoard] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ]);
 
-      const [selected, setSelected] = useState("X");
-      const [messages, setMessages] = useState([]);
-      const [greeting, setGreeting] = useState<any>("");
+  const [selected, setSelected] = useState('X');
+  const [messages, setMessages] = useState([]);
+  const [greeting, setGreeting] = useState<any>('');
+  const [gameOver, setGameOver] = useState(false);
+  const [winner, setWinner] = useState('');
 
-      useSubscription('/topic/greetings', (newGreeting) => {setGreeting(JSON.parse(newGreeting .body).content)});
-            
-      const stompClient = useStompClient();
+  useSubscription('/topic/greetings', (newGreeting) => {
+    setGreeting(JSON.parse(newGreeting.body).content);
+  });
 
-      const publishMessage = () => {
-        if (stompClient) {
-          stompClient.publish({
-            destination: "/app/hello",
-            body: JSON.stringify({ name: "Alan" }),
-          });
-        }
-      }
-      
+  useSubscription('/topic/game', (message) => {
+    const gameState = JSON.parse(message.body);
+    setBoard(gameState.board);
+    setSelected(gameState.currentPlayer);
+    setGameOver(gameState.gameOver);
+    setWinner(gameState.winner);
+  });
 
-    return(
-        <div className="items-center justify-items-center min-h-screen p-8 gap-8 bg-gray-100 sm:p-20">
-        {/* The Tic-Tac-Toe Table */}
-        <div onClick={publishMessage}> Send message </div>
-        <h1 className="text-5xl font-bold text-center">Tic Tac Toe</h1>
-        <h2 className="text-3xl font-bold text-center">Greeting: {greeting}</h2>
-        <input type="radio" name="player" value="X" onClick={() => setSelected("X")}/> X
-        <input type="radio" name="player" value="O" onClick={() => setSelected("O")}/> O
-        <table className="border-collapse border-4 border-black bg-white text-4xl">
-          <tbody>
-            {grid.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {row.map((cell, cellIndex) => (
-                  <td
-                    key={cellIndex}
-                    className="border-4 border-black w-16 h-16 text-center cursor-pointer"
-                    onClick={() => {
-                      if (cell === "") {
-                        const newGrid = [...grid];
-                        newGrid[rowIndex][cellIndex] = selected;
-                        setGrid(newGrid);
-                      }
-                    }}
-                  >
-                    {cell}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    );
+  const stompClient = useStompClient();
+
+  const publishMessage = () => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: '/app/hello',
+        body: JSON.stringify({ name: 'Alan' }),
+      });
+    }
+  };
+
+  const publishMove = (row: Number, col: Number) => {
+    if (stompClient) {
+      stompClient.publish({
+        destination: '/app/move',
+        body: JSON.stringify({ row, col }),
+      });
+    }
+  };
+
+  return (
+    <div className="items-center justify-items-center min-h-screen p-8 gap-8 bg-gray-100 sm:p-20">
+      {/* The Tic-Tac-Toe Table */}
+      <button
+        onClick={publishMessage}
+        className="px-4 py-2 bg-blue-599 text-white font-bold rounded-lg border-2 border-blue-700 bg-blue-600 hover:bg-blue-400 cursor-pointer"
+      >
+        {' '}
+        Connect{' '}
+      </button>
+      <h1 className="text-5xl font-bold text-center">Tic Tac Toe</h1>
+      <h2 className="text-3xl font-bold text-center">Greeting: {greeting}</h2>
+      <input
+        type="radio"
+        name="player"
+        value="X"
+        onClick={() => setSelected('X')}
+      />{' '}
+      X
+      <input
+        type="radio"
+        name="player"
+        value="O"
+        onClick={() => setSelected('O')}
+      />{' '}
+      O
+      <table className="border-collapse border-4 border-black bg-white text-4xl">
+        <tbody>
+          {board.map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((cell, colIndex) => (
+                <td
+                  key={`${rowIndex}-${colIndex}`}
+                  className="border-4 border-black w-16 h-16 text-center cursor-pointer"
+                  onClick={() => publishMove(rowIndex, colIndex)}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 }
