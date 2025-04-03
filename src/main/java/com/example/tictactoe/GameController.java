@@ -15,6 +15,12 @@ public class GameController {
     @MessageMapping("/move")
     @SendTo("/topic/game")
     public GameState handleMove(Move move) {
-        return gameService.makeNove(move.getRow(), move.getCol());
+        return gameService.makeMove(move.getRow(), move.getCol());
+    }
+
+    @MessageMapping("/clearBoard")
+    @SendTo("/topic/game")
+    public GameState clearBoard() {
+        return gameService.clearBoard();
     }
 }

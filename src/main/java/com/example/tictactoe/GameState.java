@@ -12,11 +12,19 @@ public class GameState {
         }
         board[row][col] = currentPlayer;
 
-        // checkGameOver();
+        checkGameOver();
         if(!gameOver) {
             currentPlayer = currentPlayer.equals("X") ? "O" : "X";
         }
 
+        return true;
+    }
+
+    public synchronized boolean clearBoard() {
+        board = new String[3][3];
+        currentPlayer = "X";
+        winner = null;
+        gameOver = false;
         return true;
     }
 

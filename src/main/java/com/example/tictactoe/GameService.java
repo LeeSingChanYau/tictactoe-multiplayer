@@ -5,8 +5,13 @@ import org.springframework.stereotype.Service;
 public class GameService {
     private final GameState gameState = new GameState();
 
-    public synchronized GameState makeNove(int row, int col) {
+    public synchronized GameState makeMove(int row, int col) {
         gameState.makeMove(row, col);
+        return gameState;
+    }
+
+    public synchronized GameState clearBoard() {
+        gameState.clearBoard();
         return gameState;
     }
 
